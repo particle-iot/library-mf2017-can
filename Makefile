@@ -9,6 +9,8 @@
 # Makefile derived from https://spin.atomicobject.com/2016/08/26/makefile-c-projects/
 ################################################################################
 
+all: tests
+
 BUILD_DIR ?= build
 TARGET_EXEC ?= test
 

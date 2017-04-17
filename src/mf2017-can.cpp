@@ -1,4 +1,4 @@
-/* mf2017-can library by Julien Vanier <jvanier@gmail.com>
+/* particle-mf2017-can library by Julien Vanier <jvanier@gmail.com>
  */
 
 #include "mf2017-can.h"
@@ -12,30 +12,30 @@ enum MessageIds {
   STATION_5_STATUS = 0x105,
 };
 
-Communication::Communication(MachineModules myself, HAL_CAN_Channel channel) :
+Communication::Communication(HAL_CAN_Channel channel) :
   ballEntering(),
   ballExiting(),
   ballsWaiting(),
+  testCounter(),
   statusLastTransmit(),
-  myself(myself),
+  myTestCounter(),
   can(channel)
 {
 }
 
 void Communication::begin() {
-  can.begin();
-}
-
-void Communication::process() {
-  CANMessage m;
-  while (can.receive(m)) {
-    decodeMessage(m);
-  }
-  transmitModuleMessages();
+  can.begin(baudRate);
 }
 
 CANChannel& Communication::rawCAN() {
   return can;
+}
+
+void Communication::receive() {
+  CANMessage m;
+  while (can.receive(m)) {
+    decodeMessage(m);
+  }
 }
 
 void Communication::decodeMessage(CANMessage m) {
@@ -44,19 +44,21 @@ void Communication::decodeMessage(CANMessage m) {
       ballEntering[0] = getBit(m.data, 0, 0);
       ballExiting[0] = getBit(m.data, 0, 1);
       ballsWaiting[0] = getU8(m.data, 1);
+      testCounter[0] = getU8(m.data, 7);
       break;
     case STATION_2_STATUS:
       ballEntering[1] = getBit(m.data, 0, 0);
       ballExiting[1] = getBit(m.data, 0, 1);
       ballsWaiting[1] = getU8(m.data, 1);
+      testCounter[1] = getU8(m.data, 7);
       break;
     // etc
     // OR refactor in case all stations send the same data in status message
   }
 }
 
-void Communication::transmitModuleMessages() {
-  switch(myself) {
+void Communication::transmit(MachineModules module) {
+  switch(module) {
     case MachineModules::Station1:
       if (millis() - statusLastTransmit > 100) {
         CANMessage m;
@@ -65,6 +67,7 @@ void Communication::transmitModuleMessages() {
         setBit(m.data, ballEntering[0], 0, 0);
         setBit(m.data, ballExiting[0], 0, 1);
         setU8(m.data, ballsWaiting[0], 1);
+        setU8(m.data, myTestCounter++, 7);
         can.transmit(m);
         statusLastTransmit = millis();
       }
@@ -81,6 +84,7 @@ void Communication::transmitModuleMessages() {
         setBit(m.data, ballEntering[1], 0, 0);
         setBit(m.data, ballExiting[1], 0, 1);
         setU8(m.data, ballsWaiting[1], 1);
+        setU8(m.data, myTestCounter++, 7);
         can.transmit(m);
         statusLastTransmit = millis();
       }

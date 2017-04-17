@@ -1,61 +1,40 @@
-# mf2017-can
+# Particle Maker Faire 2017 Machine Communication
 
-A Particle library for mf2017-can
+Share state between all machine modules over CAN.
 
-## Welcome to your library!
+## Overview
 
-To get started, modify the sources in [src](src). Rename the example folder inside [examples](examples) to a more meaningful name and add additional examples in separate folders.
-
-To compile your example you can use `particle compile examples/usage` command in [Particle CLI](https://docs.particle.io/guide/tools-and-features/cli#update-your-device-remotely) or use our [Desktop IDE](https://docs.particle.io/guide/tools-and-features/dev/#compiling-code).
-
-Libraries can also depend on other libraries. To add a dependency use [`particle library add`](https://docs.particle.io/guide/tools-and-features/cli#adding-a-library) or [library management](https://docs.particle.io/guide/tools-and-features/dev/#managing-libraries) in Desktop IDE.
-
-After the library is done you can upload it with `particle library upload` or `Upload` command in the IDE. This will create a private (only visible by you) library that you can use in other projects. If you wish to make your library public, use `particle library publish` or `Publish` command.
-
-_TODO: update this README_
-
-## Usage
-
-Connect XYZ hardware, add the mf2017-can library to your project and follow this simple example:
+Create a `Communication` object. Read variables that contain state from
+other modules you care about, write state about your own module. Call
+`receive()` to update other module states and
+`transmit(MachimeModules::<my_module>)` to send your own state to other
+modules.
 
 ```
 #include "mf2017-can.h"
-Mf2017can mf2017can;
+
+Communication comms;
 
 void setup() {
-  mf2017can.begin();
+  pinMode(D0, INPUT);
+  comms.begin();
 }
 
 void loop() {
-  mf2017can.process();
+  // Send your state
+  comms.ballsEntering[0] = digitalRead(D0);
+  // Read other state
+  if (comms.machineState == 0) {
+    // disable this station
+  }
+
+  // Update CAN bus
+  comms.receive();
+  comms.transmit(MachineModules::Station1);
 }
 ```
 
-See the [examples](examples) folder for more details.
-
-## Documentation
-
-TODO: Describe `Mf2017can`
-
-## Contributing
-
-Here's how you can make changes to this library and eventually contribute those changes back.
-
-To get started, [clone the library from GitHub to your local machine](https://help.github.com/articles/cloning-a-repository/).
-
-Change the name of the library in `library.properties` to something different. You can add your name at then end.
-
-Modify the sources in <src> and <examples> with the new behavior.
-
-To compile an example, use `particle compile examples/usage` command in [Particle CLI](https://docs.particle.io/guide/tools-and-features/cli#update-your-device-remotely) or use our [Desktop IDE](https://docs.particle.io/guide/tools-and-features/dev/#compiling-code).
-
-After your changes are done you can upload them with `particle library upload` or `Upload` command in the IDE. This will create a private (only visible by you) library that you can use in other projects. Do `particle library add mf2017-can_myname` to add the library to a project on your machine or add the mf2017-can_myname library to a project on the Web IDE or Desktop IDE.
-
-At this point, you can create a [GitHub pull request](https://help.github.com/articles/about-pull-requests/) with your changes to the original library. 
-
-If you wish to make your library public, use `particle library publish` or `Publish` command.
-
 ## LICENSE
-Copyright 2017 Julien Vanier <jvanier@gmail.com>
+Copyright 2017 Particle
 
-Licensed under the <insert your choice of license here> license
+Licensed under the MIT license

@@ -13,31 +13,31 @@ enum class MachineModules {
   Station5,
   Lights,
   Display,
-  None, // Special module for listening only
 };
 
 class Communication {
 public:
-  constexpr int StationCount = 5;
+  constexpr static int StationCount = 5;
+  constexpr static long baudRate = 500000;
 
-  Communication(MachineModule myself, HAL_CAN_Channel channel = CAN_D1_D2);
+  Communication(HAL_CAN_Channel channel = CAN_D1_D2);
   void begin();
-  void process();
-
   CANChannel& rawCAN();
+  void receive();
+  void transmit(MachineModules module);
 
   // All the variables shared between the modules
   bool ballEntering[StationCount];
   bool ballExiting[StationCount];
   uint8_t ballsWaiting[StationCount];
+  uint8_t testCounter[StationCount];
 
   long statusLastTransmit;
+  uint8_t myTestCounter;
 
 private:
   void decodeMessage(CANMessage m);
-  void transmitModuleMessages();
 
 private:
-  MachineModule myself;
   CANChannel can;
 };
