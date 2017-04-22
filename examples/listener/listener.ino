@@ -2,7 +2,8 @@
 
 #include "mf2017-can.h"
 
-Communication comms;
+BuiltinCAN can(CAN_D1_D2);
+Communication comms(can);
 
 void setup() {
   Serial.begin();
@@ -15,12 +16,13 @@ void loop() {
   // Print the state of receive messages
   static long t = 0;
   if (millis() - t > 1000) {
-    Serial.printlnf("S1=%d S2=%d S3=%d S4=%d S5=%d",
-      comms.testCounter[0],
-      comms.testCounter[1],
-      comms.testCounter[2],
-      comms.testCounter[3],
-      comms.testCounter[4]
+    Serial.printlnf("P1=%d P2=%d P3=%d P4=%d L=%d D=%d",
+      comms.Input1Active,
+      comms.Input2Active,
+      comms.Input3Active,
+      comms.Input4Active,
+      comms.LightsActive,
+      comms.DisplayActive
     );
 
     t = millis();
