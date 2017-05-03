@@ -32,9 +32,10 @@ void Communication::receive() {
 }
 
 void Communication::decodeMessage(CANMessage m) {
+  auto now = millis();
   switch (m.id) {
     case Panel1Status:
-      Panel1StatusLastRx = millis();
+      Panel1StatusLastRx = now;
       Input1Active = getBit(m.data, 0, 0);
       Reservoir1Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
       RedButtonPressed = getBit(m.data, 2, 0);
@@ -42,19 +43,19 @@ void Communication::decodeMessage(CANMessage m) {
       BlueButtonPressed = getBit(m.data, 2, 2);
       break;
     case Panel2Status:
-      Panel2StatusLastRx = millis();
+      Panel2StatusLastRx = now;
       Input2Active = getBit(m.data, 0, 0);
       Reservoir2Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
       InputColorHue = getU8(m.data, 2);
       break;
     case Panel3Status:
-      Panel3StatusLastRx = millis();
+      Panel3StatusLastRx = now;
       Input3Active = getBit(m.data, 0, 0);
       Reservoir3Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
       InputCrankSpeed = getFloat(m.data, 4);
       break;
     case Panel4Status:
-      Panel4StatusLastRx = millis();
+      Panel4StatusLastRx = now;
       Input4Active = getBit(m.data, 0, 0);
       Reservoir4Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
       LeftJoystickUp = getBit(m.data, 2, 0);
@@ -63,30 +64,31 @@ void Communication::decodeMessage(CANMessage m) {
       RightJoystickDown = getBit(m.data, 2, 3);
       break;
     case LightsStatus:
-      LightsStatusLastRx = millis();
+      LightsStatusLastRx = now;
       LightsActive = getBit(m.data, 0, 0);
       break;
     case DisplayStatus:
-      DisplayStatusLastRx = millis();
+      DisplayStatusLastRx = now;
       DisplayActive = getBit(m.data, 0, 0);
       break;
     case SupervisorControl:
-      SupervisorControlLastRx = millis();
+      SupervisorControlLastRx = now;
       MachineStart = getBit(m.data, 0, 0);
       MachineStop = getBit(m.data, 0, 1);
       break;
     case Panel3Config:
-      Panel3StatusLastRx = millis();
+      Panel3ConfigLastRx = now;
       InputCrankBallWheelSpeedRatio = getFloat(m.data, 0);
       break;
   }
 }
 
 void Communication::transmit(MachineModules module) {
+  auto now = millis();
   switch(module) {
     case MachineModules::Panel1:
-      if (millis() - Panel1StatusLastTx > 100) {
-        Panel1StatusLastTx = millis();
+      if (now - Panel1StatusLastTx > 100) {
+        Panel1StatusLastTx = now;
         CANMessage m;
         m.id = Panel1Status;
         m.len = 8;
@@ -101,8 +103,8 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Panel2:
-      if (millis() - Panel2StatusLastTx > 100) {
-        Panel2StatusLastTx = millis();
+      if (now - Panel2StatusLastTx > 100) {
+        Panel2StatusLastTx = now;
         CANMessage m;
         m.id = Panel2Status;
         m.len = 8;
@@ -115,8 +117,8 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Panel3:
-      if (millis() - Panel3StatusLastTx > 100) {
-        Panel3StatusLastTx = millis();
+      if (now - Panel3StatusLastTx > 100) {
+        Panel3StatusLastTx = now;
         CANMessage m;
         m.id = Panel3Status;
         m.len = 8;
@@ -129,8 +131,8 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Panel4:
-      if (millis() - Panel4StatusLastTx > 100) {
-        Panel2StatusLastTx = millis();
+      if (now - Panel4StatusLastTx > 100) {
+        Panel4StatusLastTx = now;
         CANMessage m;
         m.id = Panel4Status;
         m.len = 8;
@@ -146,8 +148,8 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Lights:
-      if (millis() - LightsStatusLastTx > 100) {
-        LightsStatusLastTx = millis();
+      if (now - LightsStatusLastTx > 100) {
+        LightsStatusLastTx = now;
         CANMessage m;
         m.id = LightsStatus;
         m.len = 1;
@@ -158,8 +160,8 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Display:
-      if (millis() - DisplayStatusLastTx > 100) {
-        DisplayStatusLastTx = millis();
+      if (now - DisplayStatusLastTx > 100) {
+        DisplayStatusLastTx = now;
         CANMessage m;
         m.id = DisplayStatus;
         m.len = 1;
@@ -170,8 +172,8 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Supervisor:
-      if (millis() - SupervisorControlLastTx > 100) {
-        SupervisorControlLastTx = millis();
+      if (now - SupervisorControlLastTx > 100) {
+        SupervisorControlLastTx = now;
         CANMessage m;
         m.id = SupervisorControl;
         m.len = 1;
@@ -180,8 +182,8 @@ void Communication::transmit(MachineModules module) {
         can.transmit(m);
       }
 
-      if (millis() - Panel3ConfigLastTx > 1000) {
-        Panel3ConfigLastTx = millis();
+      if (now - Panel3ConfigLastTx > 1000) {
+        Panel3ConfigLastTx = now;
         CANMessage m;
         m.id = Panel3Config;
         m.len = 8;
