@@ -87,7 +87,7 @@ void Communication::transmit(MachineModules module) {
   auto now = millis();
   switch(module) {
     case MachineModules::Panel1:
-      if (now - Panel1StatusLastTx > 100) {
+      if (now - Panel1StatusLastTx >= 100) {
         Panel1StatusLastTx = now;
         CANMessage m;
         m.id = Panel1Status;
@@ -103,7 +103,7 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Panel2:
-      if (now - Panel2StatusLastTx > 100) {
+      if (now - Panel2StatusLastTx >= 100) {
         Panel2StatusLastTx = now;
         CANMessage m;
         m.id = Panel2Status;
@@ -117,7 +117,7 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Panel3:
-      if (now - Panel3StatusLastTx > 100) {
+      if (now - Panel3StatusLastTx >= 100) {
         Panel3StatusLastTx = now;
         CANMessage m;
         m.id = Panel3Status;
@@ -131,7 +131,7 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Panel4:
-      if (now - Panel4StatusLastTx > 100) {
+      if (now - Panel4StatusLastTx >= 100) {
         Panel4StatusLastTx = now;
         CANMessage m;
         m.id = Panel4Status;
@@ -148,7 +148,7 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Lights:
-      if (now - LightsStatusLastTx > 100) {
+      if (now - LightsStatusLastTx >= 100) {
         LightsStatusLastTx = now;
         CANMessage m;
         m.id = LightsStatus;
@@ -160,7 +160,7 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Display:
-      if (now - DisplayStatusLastTx > 100) {
+      if (now - DisplayStatusLastTx >= 100) {
         DisplayStatusLastTx = now;
         CANMessage m;
         m.id = DisplayStatus;
@@ -172,7 +172,7 @@ void Communication::transmit(MachineModules module) {
       break;
 
     case MachineModules::Supervisor:
-      if (now - SupervisorControlLastTx > 100) {
+      if (now - SupervisorControlLastTx >= 100) {
         SupervisorControlLastTx = now;
         CANMessage m;
         m.id = SupervisorControl;
@@ -182,7 +182,7 @@ void Communication::transmit(MachineModules module) {
         can.transmit(m);
       }
 
-      if (now - Panel3ConfigLastTx > 1000) {
+      if (now - Panel3ConfigLastTx >= 1000) {
         Panel3ConfigLastTx = now;
         CANMessage m;
         m.id = Panel3Config;
