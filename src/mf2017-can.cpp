@@ -8,6 +8,7 @@ enum MessageIds {
   Panel1Status = 0x101,
   Panel2Status = 0x102,
   Panel3Status = 0x103,
+  Panel3InputStatus = 0x113,
   Panel4Status = 0x104,
   LightsStatus = 0x110,
   DisplayStatus = 0x120,
@@ -41,27 +42,34 @@ void Communication::decodeMessage(CANMessage m) {
       RedButtonPressed = getBit(m.data, 2, 0);
       GreenButtonPressed = getBit(m.data, 2, 1);
       BlueButtonPressed = getBit(m.data, 2, 2);
+      BallCount1 = getU32(m.data, 4);
       break;
     case Panel2Status:
       Panel2StatusLastRx = now;
       Input2Active = getBit(m.data, 0, 0);
       Reservoir2Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
       InputColorHue = getU8(m.data, 2);
+      BallCount2 = getU32(m.data, 4);
       break;
     case Panel3Status:
       Panel3StatusLastRx = now;
       Input3Active = getBit(m.data, 0, 0);
       Reservoir3Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
-      InputCrankSpeed = getFloat(m.data, 4);
+      BallCount3 = getU32(m.data, 4);
+      break;
+    case Panel3InputStatus:
+      Panel3InputStatusLastRx = now;
+      InputCrankSpeed = getFloat(m.data, 0);
       break;
     case Panel4Status:
       Panel4StatusLastRx = now;
       Input4Active = getBit(m.data, 0, 0);
+      BallDropperLeftLimit = getBit(m.data, 0, 1);
+      BallDropperRightLimit = getBit(m.data, 0, 2);
       Reservoir4Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
-      LeftJoystickUp = getBit(m.data, 2, 0);
-      LeftJoystickDown = getBit(m.data, 2, 1);
-      RightJoystickUp = getBit(m.data, 2, 2);
-      RightJoystickDown = getBit(m.data, 2, 3);
+      HoverPositionLR = getU8(m.data, 2);
+      HoverPositionUD = getU8(m.data, 3);
+      BallCount4 = getU32(m.data, 4);
       break;
     case LightsStatus:
       LightsStatusLastRx = now;
@@ -97,6 +105,7 @@ void Communication::transmit(MachineModules module) {
         setBit(m.data, RedButtonPressed, 2, 0);
         setBit(m.data, GreenButtonPressed, 2, 1);
         setBit(m.data, BlueButtonPressed, 2, 2);
+        setU32(m.data, BallCount1, 4);
         can.transmit(m);
       }
 
@@ -111,6 +120,7 @@ void Communication::transmit(MachineModules module) {
         setBit(m.data, Input2Active, 0, 0);
         setU8(m.data, static_cast<uint8_t>(Reservoir2Status), 1);
         setU8(m.data, InputColorHue, 2);
+        setU32(m.data, BallCount2, 4);
         can.transmit(m);
       }
 
@@ -124,7 +134,15 @@ void Communication::transmit(MachineModules module) {
         m.len = 8;
         setBit(m.data, Input3Active, 0, 0);
         setU8(m.data, static_cast<uint8_t>(Reservoir3Status), 1);
-        setFloat(m.data, InputCrankSpeed, 4);
+        setU32(m.data, BallCount3, 4);
+        can.transmit(m);
+      }
+      if (now - Panel3InputStatusLastTx >= 100) {
+        Panel3InputStatusLastTx = now;
+        CANMessage m;
+        m.id = Panel3InputStatus;
+        m.len = 8;
+        setFloat(m.data, InputCrankSpeed, 0);
         can.transmit(m);
       }
 
@@ -137,11 +155,12 @@ void Communication::transmit(MachineModules module) {
         m.id = Panel4Status;
         m.len = 8;
         setBit(m.data, Input4Active, 0, 0);
+        setBit(m.data, BallDropperLeftLimit, 0, 1);
+        setBit(m.data, BallDropperRightLimit, 0, 2);
         setU8(m.data, static_cast<uint8_t>(Reservoir4Status), 1);
-        setBit(m.data, LeftJoystickUp, 2, 0);
-        setBit(m.data, LeftJoystickDown, 2, 1);
-        setBit(m.data, RightJoystickUp, 2, 2);
-        setBit(m.data, RightJoystickDown, 2, 3);
+        setU8(m.data, HoverPositionLR, 2);
+        setU8(m.data, HoverPositionUD, 3);
+        setU32(m.data, BallCount4, 4);
         can.transmit(m);
       }
 

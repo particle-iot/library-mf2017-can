@@ -44,6 +44,7 @@ public:
   bool GreenButtonPressed;
   bool BlueButtonPressed;
   bool RedButtonPressed;
+  uint32_t BallCount1;
 
   long Panel1StatusLastTx;
   long Panel1StatusLastRx;
@@ -52,6 +53,7 @@ public:
   bool Input2Active;
   ReservoirStatus Reservoir2Status;
   uint8_t InputColorHue;
+  uint32_t BallCount2;
 
   long Panel2StatusLastTx;
   long Panel2StatusLastRx;
@@ -59,18 +61,24 @@ public:
   // Panel3
   bool Input3Active;
   ReservoirStatus Reservoir3Status;
-  float InputCrankSpeed;
+  uint32_t BallCount3;
 
   long Panel3StatusLastTx;
   long Panel3StatusLastRx;
 
+  float InputCrankSpeed;
+
+  long Panel3InputStatusLastTx;
+  long Panel3InputStatusLastRx;
+
   // Panel4
   bool Input4Active;
   ReservoirStatus Reservoir4Status;
-  bool LeftJoystickUp;
-  bool LeftJoystickDown;
-  bool RightJoystickUp;
-  bool RightJoystickDown;
+  bool BallDropperLeftLimit;
+  bool BallDropperRightLimit;
+  uint8_t HoverPositionLR;
+  uint8_t HoverPositionUD;
+  uint32_t BallCount4;
 
   long Panel4StatusLastTx;
   long Panel4StatusLastRx;
