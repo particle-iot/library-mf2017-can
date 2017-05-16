@@ -6,6 +6,7 @@
 
 enum MessageIds {
   Panel1Status = 0x101,
+  Panel1OutputStatus = 0x121,
   Panel2Status = 0x102,
   Panel3Status = 0x103,
   Panel3InputStatus = 0x113,
@@ -44,6 +45,12 @@ void Communication::decodeMessage(CANMessage m) {
       GreenButtonPressed = getBit(m.data, 2, 1);
       BlueButtonPressed = getBit(m.data, 2, 2);
       BallCount1 = getU32(m.data, 4);
+      break;
+    case Panel1OutputStatus:
+      Panel1OutputStatusLastRx = now;
+      RedBallCount = getU16(m.data, 0);
+      GreenBallCount = getU16(m.data, 2);
+      BlueBallCount = getU16(m.data, 4);
       break;
     case Panel2Status:
       Panel2StatusLastRx = now;
@@ -113,6 +120,16 @@ void Communication::transmit(MachineModules module) {
         setBit(m.data, GreenButtonPressed, 2, 1);
         setBit(m.data, BlueButtonPressed, 2, 2);
         setU32(m.data, BallCount1, 4);
+        can.transmit(m);
+      }
+      if (now - Panel1OutputStatusLastTx >= 100) {
+        Panel1OutputStatusLastTx = now;
+        CANMessage m;
+        m.id = Panel1OutputStatus;
+        m.len = 8;
+        setU16(m.data, RedBallCount, 0);
+        setU16(m.data, GreenBallCount, 2);
+        setU16(m.data, BlueBallCount, 4);
         can.transmit(m);
       }
 

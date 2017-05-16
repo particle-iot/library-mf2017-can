@@ -49,6 +49,13 @@ public:
   long Panel1StatusLastTx;
   long Panel1StatusLastRx;
 
+  uint16_t RedBallCount;
+  uint16_t GreenBallCount;
+  uint16_t BlueBallCount;
+
+  long Panel1OutputStatusLastTx;
+  long Panel1OutputStatusLastRx;
+
   // Panel2
   bool Input2Active;
   ReservoirStatus Reservoir2Status;
