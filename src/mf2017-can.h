@@ -71,6 +71,13 @@ public:
   long Panel3InputStatusLastTx;
   long Panel3InputStatusLastRx;
 
+  uint16_t IntegrationCountA;
+  uint16_t IntegrationCountB;
+  uint16_t IntegrationCountC;
+
+  long Panel3OutputStatusLastTx;
+  long Panel3OutputStatusLastRx;
+
   // Panel4
   bool Input4Active;
   ReservoirStatus Reservoir4Status;

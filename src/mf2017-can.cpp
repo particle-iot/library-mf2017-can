@@ -9,6 +9,7 @@ enum MessageIds {
   Panel2Status = 0x102,
   Panel3Status = 0x103,
   Panel3InputStatus = 0x113,
+  Panel3OutputStatus = 0x123,
   Panel4Status = 0x104,
   LightsStatus = 0x110,
   DisplayStatus = 0x120,
@@ -60,6 +61,12 @@ void Communication::decodeMessage(CANMessage m) {
     case Panel3InputStatus:
       Panel3InputStatusLastRx = now;
       InputCrankSpeed = getFloat(m.data, 0);
+      break;
+    case Panel3OutputStatus:
+      Panel3OutputStatusLastRx = now;
+      IntegrationCountA = getU16(m.data, 0);
+      IntegrationCountB = getU16(m.data, 2);
+      IntegrationCountC = getU16(m.data, 4);
       break;
     case Panel4Status:
       Panel4StatusLastRx = now;
@@ -143,6 +150,16 @@ void Communication::transmit(MachineModules module) {
         m.id = Panel3InputStatus;
         m.len = 8;
         setFloat(m.data, InputCrankSpeed, 0);
+        can.transmit(m);
+      }
+      if (now - Panel3OutputStatusLastTx >= 100) {
+        Panel3OutputStatusLastTx = now;
+        CANMessage m;
+        m.id = Panel3OutputStatus;
+        m.len = 8;
+        setU16(m.data, IntegrationCountA, 0);
+        setU16(m.data, IntegrationCountB, 2);
+        setU16(m.data, IntegrationCountC, 4);
         can.transmit(m);
       }
 
