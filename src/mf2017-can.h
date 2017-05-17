@@ -59,7 +59,7 @@ public:
   // Panel2
   bool Input2Active;
   ReservoirStatus Reservoir2Status;
-  uint8_t InputColorHue;
+  uint16_t InputColorHue;
   uint32_t BallCount2;
 
   long Panel2StatusLastTx;

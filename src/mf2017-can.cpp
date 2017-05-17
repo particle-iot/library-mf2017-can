@@ -56,7 +56,7 @@ void Communication::decodeMessage(CANMessage m) {
       Panel2StatusLastRx = now;
       Input2Active = getBit(m.data, 0, 0);
       Reservoir2Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
-      InputColorHue = getU8(m.data, 2);
+      InputColorHue = getU16(m.data, 2);
       BallCount2 = getU32(m.data, 4);
       break;
     case Panel3Status:
@@ -143,7 +143,7 @@ void Communication::transmit(MachineModules module) {
         m.len = 8;
         setBit(m.data, Input2Active, 0, 0);
         setU8(m.data, static_cast<uint8_t>(Reservoir2Status), 1);
-        setU8(m.data, InputColorHue, 2);
+        setU16(m.data, InputColorHue, 2);
         setU32(m.data, BallCount2, 4);
         can.transmit(m);
       }
