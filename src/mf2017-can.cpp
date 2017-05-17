@@ -12,6 +12,7 @@ enum MessageIds {
   Panel3InputStatus = 0x113,
   Panel3OutputStatus = 0x123,
   Panel4Status = 0x104,
+  Panel4OutputStatus = 0x124,
   LightsStatus = 0x110,
   DisplayStatus = 0x120,
   SupervisorControl = 0x030,
@@ -56,7 +57,7 @@ void Communication::decodeMessage(CANMessage m) {
       Panel2StatusLastRx = now;
       Input2Active = getBit(m.data, 0, 0);
       Reservoir2Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
-      InputColorHue = getU16(m.data, 2);
+      InputColorHue = getU8(m.data, 2);
       BallCount2 = getU32(m.data, 4);
       break;
     case Panel3Status:
@@ -80,10 +81,19 @@ void Communication::decodeMessage(CANMessage m) {
       Input4Active = getBit(m.data, 0, 0);
       BallDropperLeftLimit = getBit(m.data, 0, 1);
       BallDropperRightLimit = getBit(m.data, 0, 2);
+      PrintingPrizeA = getBit(m.data, 0, 3);
+      PrintingPrizeB = getBit(m.data, 0, 4);
+      PrintingPrizeC = getBit(m.data, 0, 5);
       Reservoir4Status = static_cast<ReservoirStatus>(getU8(m.data, 1));
       HoverPositionLR = getU8(m.data, 2);
       HoverPositionUD = getU8(m.data, 3);
       BallCount4 = getU32(m.data, 4);
+      break;
+    case Panel4OutputStatus:
+      Panel4OutputStatusLastRx = now;
+      PrizeCountA = getU16(m.data, 0);
+      PrizeCountB = getU16(m.data, 2);
+      PrizeCountC = getU16(m.data, 4);
       break;
     case LightsStatus:
       LightsStatusLastRx = now;
@@ -143,7 +153,7 @@ void Communication::transmit(MachineModules module) {
         m.len = 8;
         setBit(m.data, Input2Active, 0, 0);
         setU8(m.data, static_cast<uint8_t>(Reservoir2Status), 1);
-        setU16(m.data, InputColorHue, 2);
+        setU8(m.data, InputColorHue, 2);
         setU32(m.data, BallCount2, 4);
         can.transmit(m);
       }
@@ -191,6 +201,9 @@ void Communication::transmit(MachineModules module) {
         setBit(m.data, Input4Active, 0, 0);
         setBit(m.data, BallDropperLeftLimit, 0, 1);
         setBit(m.data, BallDropperRightLimit, 0, 2);
+        setBit(m.data, PrintingPrizeA, 0, 3);
+        setBit(m.data, PrintingPrizeB, 0, 4);
+        setBit(m.data, PrintingPrizeC, 0, 5);
         setU8(m.data, static_cast<uint8_t>(Reservoir4Status), 1);
         setU8(m.data, HoverPositionLR, 2);
         setU8(m.data, HoverPositionUD, 3);

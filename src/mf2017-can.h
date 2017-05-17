@@ -59,7 +59,7 @@ public:
   // Panel2
   bool Input2Active;
   ReservoirStatus Reservoir2Status;
-  uint16_t InputColorHue;
+  uint8_t InputColorHue;
   uint32_t BallCount2;
 
   long Panel2StatusLastTx;
@@ -90,12 +90,22 @@ public:
   ReservoirStatus Reservoir4Status;
   bool BallDropperLeftLimit;
   bool BallDropperRightLimit;
+  bool PrintingPrizeA;
+  bool PrintingPrizeB;
+  bool PrintingPrizeC;
   uint8_t HoverPositionLR;
   uint8_t HoverPositionUD;
   uint32_t BallCount4;
 
   long Panel4StatusLastTx;
   long Panel4StatusLastRx;
+
+  uint16_t PrizeCountA;
+  uint16_t PrizeCountB;
+  uint16_t PrizeCountC;
+
+  long Panel4OutputStatusLastTx;
+  long Panel4OutputStatusLastRx;
 
   // Lights
   bool LightsActive;
